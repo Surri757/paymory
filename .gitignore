@@ -1,0 +1,11 @@
+# 过程产物
+.mimosa/
+prototype/.shots/
+prototype/.shots/scan/
+
+# 系统杂项
+Thumbs.db
+.DS_Store
+
+# playwright 会话产物
+prototype/.playwright-cli/

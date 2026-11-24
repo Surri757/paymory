@@ -1,0 +1,60 @@
+/* Paymory · 设计令牌：字体、纸与墨的颜色、动效时长与曲线 */
+@import url('../fonts/lxgw/lxgwwenkai-regular.css');
+
+/* 大数字用的宋体数字：只取拉丁切片（18KB），覆盖数字、逗号、¥ */
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../fonts/noto-serif-sc/noto-serif-sc-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0020-007E, U+00A5, U+2000-206F;
+}
+
+:root {
+  --font-hand: 'LXGW WenKai', 'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+  --font-num: 'Noto Serif SC', 'Songti SC', 'STZhongsong', 'SimSun', serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* 墨：三种深浅，再加红笔。最淡的一档在纸上约 3.9:1——它用在要读的小字上（时间戳、贴纸下的天数），再淡就看不清 */
+  --ink: #3B3228;
+  --ink-2: #6E6151;
+  --ink-3: #86765F;
+  --line: rgba(59, 50, 40, .14);
+  --red: #B5432F;
+  --red-soft: rgba(181, 67, 47, .16);
+  --card: #FFFCF4;
+
+  /* 纸：随 data-paper 切换 */
+  --paper: #F7F0E1;
+  --dot: #D8CAA8;
+  --rule: #E3D7BB;
+
+  /* 墨夜（回望页） */
+  --night: #1A1511;
+  --night-2: #241D17;
+  --gold: #E6C684;
+  --gold-2: #B78A3C;
+  --cream: #EFE4CE;
+  --cream-2: #B7A482;
+  --cream-3: #7E715C;
+  --nline: rgba(230, 198, 132, .18);
+
+  /* 动效：四档时长，入场减速、出场加速、松手回弹、sheet 用 iOS 曲线 */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in: cubic-bezier(.4, 0, 1, 1);
+  --ease-io: cubic-bezier(.25, .1, .25, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-sheet: cubic-bezier(.32, .72, 0, 1);
+  --t1: 120ms;
+  --t2: 240ms;
+  --t3: 350ms;
+  --t4: 500ms;
+
+  /* 纸纹：一张 SVG 噪声图，铺满即成纸的颗粒。深浅两档 */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .34 0 0 0 0 .24 0 0 0 .34 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .36 0 0 0 0 .25 0 0 0 .17 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* 胶带两端的撕口：锯齿形蒙版 */
+  --tape-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 22' preserveAspectRatio='none'%3E%3Cpath d='M3 0 67 0 70 3 67 6 70 10 67 14 70 18 67 22 3 22 0 18 3 14 0 10 3 6 0 3Z'/%3E%3C/svg%3E");
+}

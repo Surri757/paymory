@@ -1,0 +1,125 @@
+/* Paymory · 动效样式：按压与抬起、入场、页面转场、便签展开 */
+
+/* ================= 按压与抬起 =================
+   模型：静止 → 悬停时被拿起来（摆正、上浮、影子变大变软）→ 按下时贴回纸面（缩小、影子收紧）→ 松手回弹
+   所有的位移都写进同一组变量，状态只改变量；动的始终是 transform 和 opacity */
+.pressable { --tx: 0px; --ty: 0px; --rr: 0deg; --sc: 1;
+  transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--rr)) scale(var(--sc));
+  transition: transform var(--t3) var(--ease-spring); }
+.pressable.is-down { --sc: .94; transition: transform var(--t1) var(--ease-io); }   /* 按下：120ms 就位 */
+.card.pressable { --ty: var(--dy, 0px); --rr: var(--r, 0deg); }
+.card__paper { transition: filter var(--t2) ease-out; }
+.pp { --rr: var(--r, 0deg); }
+/* 按住一张便签或拍立得：摆正、贴回纸面（scale .96 + 略压暗），影子几乎收没。
+   写在悬停媒体查询外面——手指没有悬停，按下是触屏唯一能"摸到纸"的时刻 */
+.card.pressable.is-down, .pp.is-down { --sc: .96; --rr: 0deg; --ty: var(--dy, 0px); transition: transform var(--t1) var(--ease-io); }
+.card.pressable.is-down .card__sh { opacity: .06; transform: translate3d(0, 1px, 0); transition-duration: var(--t1); }
+.card.pressable.is-down .card__paper { filter: brightness(.94); transition: filter var(--t1) var(--ease-io); }
+@media (hover: hover) and (pointer: fine) {
+  .card.pressable:hover { --rr: 0deg; --ty: calc(var(--dy, 0px) - 3px); transition: transform var(--t2) var(--ease-out); }
+  .card.pressable:hover .card__sh { opacity: .44; transform: translate3d(0, 14px, 0) scale(1.02); }
+  .compose:hover { --ty: -3px; }
+}
+/* 选中的标签图标弹一下。这个类等转场结束才加（见 main.js 的 goTab）——转场期间标签栏是一张静止的快照，提前播了也看不见 */
+.tab.is-pop .ic { animation: tabPop .34s var(--ease-spring); }
+
+/* ================= 滚动入场 ================= */
+/* 还没入场的先藏着。转场拍快照时拍到的就是"还没来"的样子，不会先露一帧再跳回去 */
+.reveal:not(.in):not(.anim-done) { opacity: 0; }
+.reveal.in { animation: noteIn .5s var(--ease-out) calc(var(--i, 0) * 34ms) both; }
+.reveal.in .ph img { animation: develop 1.05s var(--ease-out) .08s both; }
+.in .ring path { animation: draw .7s var(--ease-out) .55s forwards; }
+.in .cal__ring path { animation: draw .5s var(--ease-out) calc(var(--i) * 45ms + .15s) forwards; }
+.anim-done { animation: none !important; }
+
+@keyframes noteIn { from { opacity: 0; transform: translate3d(0, 18px, 0) rotate(calc(var(--rr) * 2.4)) scale(.985); } }
+@keyframes develop { from { filter: brightness(1.5) saturate(.12) contrast(.82) sepia(0); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+/* rise 显式写出终点：用在默认透明度为 0 的元素上，只写起点的话播完还是看不见 */
+@keyframes rise { from { opacity: 0; transform: translate3d(0, 12px, 0); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } }
+@keyframes settle { 50% { transform: scale(1.06); } }
+@keyframes tabPop { from { transform: scale(.7); } 60% { transform: scale(1.12); } }
+@keyframes dropIn { from { opacity: 0; transform: rotate(calc(var(--r, 0deg) * 2.2)) translate3d(0, -26px, 0) scale(1.06); } }
+@keyframes dotIn { to { opacity: .92; transform: none; } }
+@keyframes print { to { opacity: 1; } }
+@keyframes polIn { from { opacity: 0; transform: rotate(calc(var(--r, 0deg) * 2)) translate3d(0, 22px, 0); } to { opacity: 1; transform: rotate(var(--r, 0deg)); } }
+@keyframes charIn { to { opacity: 1; transform: none; } }
+
+/* ================= 页面转场（View Transitions） =================
+   转场的种类写在 <html data-vt> 上，这里按种类挑动画。
+   叠放顺序（下在底、上在顶）：root（标签栏、底色）→ page（.app 那一屏）→ veil → mcard、mcardfoot → hero → 状态栏。
+   一条总规矩：转场期间看到的一律是快照。快照是静止的，页面快照底下又是一张不透明的底图（不是活页面），
+   所以每一帧都必须有一张不透明的页面快照盖满 .app 那块，否则会露出黑底。
+   快照拍到的是新页面"还没入场"的样子（待入场的元素藏着、数字是 0），转场一结束活页面和快照严丝合缝，
+   然后便签逐张贴上来、数字滚上去（入场的时机见 main.js）。 */
+::view-transition { pointer-events: none; }
+::view-transition-group(page) { overflow: clip; border-radius: var(--screen-r) var(--screen-r) 0 0; }
+/* root 不动：手机外壳和桌面背景不会跟着晃 */
+::view-transition-group(root), ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+
+/* 换标签：旧的一页留在下面，退后一点、压暗一点（保持不透明）；新的一页浮上来盖住它 */
+html[data-vt="tab"]::view-transition-old(page) { animation: vtSink var(--t2) var(--ease-io) both; }
+html[data-vt="tab"]::view-transition-new(page) { animation: vtRise var(--t2) var(--ease-out) both; }
+
+/* 进出回望页：纸化成夜。旧画面先虚化、压暗，再散开，露出底下的墨夜；标签栏跟着换色。
+   两张版式完全不同的画面不硬叠：旧的一张散开时已经是虚的、暗的 */
+html[data-vt="mood"]::view-transition-old(root) { animation: vtFadeOut var(--t4) var(--ease-in) both; }
+html[data-vt="mood"]::view-transition-new(root) { animation: vtFadeIn var(--t4) ease-in-out both; }
+html[data-vt="mood"]::view-transition-old(page) { animation: vtMelt var(--t4) var(--ease-in) both; }
+/* 新的一页晚 120ms 才透出来，中间有一小段"灯暗下去"。也免得快照里归零的大数字先亮半天，数字才滚 */
+html[data-vt="mood"]::view-transition-new(page) { animation: vtFadeIn calc(var(--t4) - 120ms) var(--ease-in) .12s both; }
+html[data-vt="mood"]::view-transition-old(statusbar), html[data-vt="mood"]::view-transition-new(statusbar),
+html[data-vt="mood"]::view-transition-old(island), html[data-vt="mood"]::view-transition-new(island) { animation-duration: var(--t4); }
+
+/* 进下一层：新的一页从右缘盖进来，左缘带一道投影；旧的一页向左让开、压暗。返回时反过来 */
+html[data-vt="push"]::view-transition-old(page) { animation: vtPushOld var(--t3) var(--ease-io) both; }
+html[data-vt="push"]::view-transition-new(page) { animation: vtPushNew var(--t3) var(--ease-io) both; filter: drop-shadow(-18px 0 20px rgba(40, 28, 16, .42)); }
+html[data-vt="pop"]::view-transition-old(page) { animation: vtPopOld var(--t3) var(--ease-io) both; filter: drop-shadow(-18px 0 20px rgba(40, 28, 16, .42)); }
+html[data-vt="pop"]::view-transition-new(page) { animation: vtPopNew var(--t3) var(--ease-io) both; }
+
+/* 贴纸展开成档案页 / 收回：展开时旧的一页退后压暗，新的一页浮上来；收回时反过来。
+   贴纸自己长大成封面照片，收回去时倒着走 */
+html[data-vt="open"]::view-transition-old(page) { --sink: .94; --dim: .8; animation: vtSink var(--t3) var(--ease-io) both; }
+html[data-vt="open"]::view-transition-new(page) { animation: vtRise var(--t3) var(--ease-out) both; }
+html[data-vt="close"]::view-transition-old(page) { z-index: 1; animation: vtAway var(--t3) var(--ease-in) both; }   /* 同一组里新图默认压在旧图上面；这里要旧的一页在上面散开 */
+html[data-vt="close"]::view-transition-new(page) { --sink: .94; --dim: .8; animation: vtUnsink var(--t3) var(--ease-out) both; }
+html[data-vt="open"]::view-transition-group(hero), html[data-vt="close"]::view-transition-group(hero) { animation-duration: .46s; animation-timing-function: var(--ease-sheet); }
+/* 贴纸的新旧两张全程交叉：旧的一张匀速退、新的一张减速进。任何一刻都有一张是实的，中间不会闪一下空白 */
+html[data-vt="open"]::view-transition-old(hero), html[data-vt="close"]::view-transition-old(hero) { animation: vtFadeOut .46s linear both; border-radius: 18px; overflow: clip; }
+html[data-vt="open"]::view-transition-new(hero), html[data-vt="close"]::view-transition-new(hero) { animation: vtFadeIn .46s var(--ease-out) both; border-radius: 18px; overflow: clip; }
+
+/* 便签展开成记忆卡：便签自己长成大卡（卡面的影子跟着快照走），帘子压暗，卡下面那一栏等卡落定再浮上来 */
+html[data-vt="card"]::view-transition-group(page), html[data-vt="card"]::view-transition-old(page), html[data-vt="card"]::view-transition-new(page),
+html[data-vt="card-out"]::view-transition-group(page), html[data-vt="card-out"]::view-transition-old(page), html[data-vt="card-out"]::view-transition-new(page) { animation: none; }
+html[data-vt="card"]::view-transition-new(veil) { animation: vtFadeIn var(--t3) ease-out both; }
+html[data-vt="card-out"]::view-transition-old(veil) { animation: vtFadeOut var(--t3) ease-in both; }
+::view-transition-group(mcard) { animation-duration: .44s; animation-timing-function: var(--ease-sheet); }
+html[data-vt="card"]::view-transition-old(mcard) { animation: vtFadeOut .44s linear both; border-radius: 3px; overflow: clip; }
+html[data-vt="card"]::view-transition-new(mcard) { animation: vtCardIn .44s var(--ease-out) both; border-radius: 22px; overflow: clip; filter: drop-shadow(0 24px 22px rgba(0, 0, 0, .5)); }
+html[data-vt="card-out"]::view-transition-old(mcard) { animation: vtFadeOut .3s linear both; border-radius: 22px; overflow: clip; filter: drop-shadow(0 24px 22px rgba(0, 0, 0, .5)); }
+html[data-vt="card-out"]::view-transition-new(mcard) { animation: vtFadeIn .36s var(--ease-out) both; border-radius: 3px; overflow: clip; }
+html[data-vt="card"]::view-transition-new(mcardfoot) { animation: vtRise var(--t3) var(--ease-out) .2s both; }
+html[data-vt="card-out"]::view-transition-old(mcardfoot) { animation: vtFadeOut var(--t1) linear both; }
+/* 记忆卡开着的时候点"翻开档案"：卡、那一栏、帘子跟着散掉，档案页从右滑进来 */
+html[data-vt="push"]::view-transition-old(veil), html[data-vt="push"]::view-transition-old(mcardfoot) { animation: vtFadeOut var(--t1) linear both; }
+html[data-vt="push"]::view-transition-old(mcard) { animation: vtFadeOut .3s var(--ease-in) both; border-radius: 22px; overflow: clip; }
+
+@keyframes vtFadeOut { to { opacity: 0; } }
+@keyframes vtFadeIn { from { opacity: 0; } }
+@keyframes vtRise { from { opacity: 0; transform: translate3d(0, 12px, 0); } }
+@keyframes vtAway { to { opacity: 0; transform: scale(var(--away, .96)); } }
+@keyframes vtSink { to { transform: scale(var(--sink, .97)); filter: brightness(var(--dim, .9)); } }
+@keyframes vtUnsink { from { transform: scale(var(--sink, .97)); filter: brightness(var(--dim, .9)); } }
+@keyframes vtMelt { 35% { opacity: 1; filter: blur(12px) brightness(.7); } to { opacity: 0; filter: blur(22px) brightness(.45); } }
+@keyframes vtCardIn { from { opacity: 0; transform: scale(.94); } }
+@keyframes vtPushOld { to { transform: translate3d(-26%, 0, 0); filter: brightness(.82); } }
+@keyframes vtPushNew { from { transform: translate3d(100%, 0, 0); } }
+@keyframes vtPopOld { to { transform: translate3d(100%, 0, 0); } }
+@keyframes vtPopNew { from { transform: translate3d(-26%, 0, 0); filter: brightness(.82); } }
+
+/* ================= 尊重"减少动态效果" ================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0ms !important; transition-duration: .001ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

@@ -1,0 +1,154 @@
+/* Paymory · 回望：墨夜里的一册纪念簿。一屏只讲一件事 */
+
+.page--night .cnt { font-family: var(--font-num); font-weight: 600; color: var(--gold); }
+.page--night .cnt i { width: .54em; }
+
+/* 胶卷条：挑回望谁。吸顶，滚动时随时能换 */
+.film { position: sticky; top: 0; z-index: 40; display: flex; gap: 10px; margin: -56px -28px 4px; padding: 56px 28px 12px; overflow-x: auto; scrollbar-width: none;
+  background: linear-gradient(var(--night) 0, var(--night) 74%, transparent);
+  -webkit-mask: linear-gradient(#000 0 76%, transparent); mask: linear-gradient(#000 0 76%, transparent); }
+.film::-webkit-scrollbar { display: none; }
+.film__it { flex: none; width: 54px; display: grid; justify-items: center; gap: 6px; font-size: 11px; color: var(--cream-3); }
+.film__it img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; filter: grayscale(.75) brightness(.66);
+  transition: filter var(--t2) ease-out, transform var(--t2) var(--ease-out), box-shadow var(--t2) ease-out; }
+.film__it .ic { width: 44px; height: 44px; padding: 11px; border-radius: 50%; border: 1px dashed var(--nline); color: var(--cream-3);
+  transition: color var(--t2) ease-out, border-color var(--t2) ease-out, transform var(--t2) var(--ease-out); }
+.film__it.is-on { color: var(--gold); }
+.film__it.is-on img { filter: none; transform: scale(1.1); box-shadow: 0 0 0 2px var(--night), 0 0 0 3.5px var(--gold); }
+.film__it.is-on .ic { color: var(--gold); border-color: var(--gold); transform: scale(1.1); }
+
+/* 一屏一件事：进到视口里才浮现 */
+.rv-s { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; min-height: 74vh; padding: 10vh 0 9vh;
+  opacity: 0; transform: translate3d(0, 26px, 0); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
+.rv-s.in { opacity: 1; transform: none; }
+
+.rv-cover { min-height: 86vh; justify-content: flex-start; padding-top: 12vh; }
+.rv-eyebrow { margin-bottom: 24px; font-size: 13px; letter-spacing: 6px; color: var(--cream-3); }
+.rv-big { display: flex; align-items: baseline; }
+.rv-big__p { margin-right: 2px; font-family: var(--font-num); font-weight: 600; font-size: calc(var(--size, 120px) * .56); color: var(--gold); }
+.rv-big__n { font-family: var(--font-num); font-weight: 600; font-size: var(--size, 120px); line-height: .98; color: var(--gold); letter-spacing: -.01em; }
+.rv-big__u { margin-left: 12px; font-size: 26px; color: var(--cream); }
+.rv-line { margin-top: 16px; font-size: 17px; color: var(--cream-2); }
+.rv-say { margin-bottom: 20px; font-size: 25px; line-height: 1.5; color: var(--cream); }
+.rv-say b { font-weight: 600; color: var(--gold); font-family: var(--font-num); font-size: 1.18em; }
+
+/* 迷你拍立得：封面散落的、时间线上的、第一次与最近一次的 */
+.mini-pol { position: absolute; width: 104px; padding: 5px 5px 16px; background: #F3EADB; box-shadow: 0 12px 24px rgba(0, 0, 0, .48);
+  transform: rotate(var(--r, 0deg)); opacity: .5; filter: brightness(.6) saturate(.8); }
+.mini-pol img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.mini-pol figcaption { padding-top: 6px; font-size: 12px; line-height: 1.5; color: #6E6151; }
+
+/* 封面：照片一张张落下来 */
+.scatter { position: relative; width: 100%; height: 186px; margin-top: 28px; }
+.scatter .mini-pol:nth-child(1) { left: 0; top: 24px; }
+.scatter .mini-pol:nth-child(2) { left: 29%; top: 0; }
+.scatter .mini-pol:nth-child(3) { left: 58%; top: 34px; }
+.scatter .mini-pol.is-top { left: 25%; top: 48px; width: 128px; opacity: 1; filter: none; z-index: 2; }
+.in .scatter .mini-pol { animation: dropIn .64s var(--ease-sheet) calc(var(--i) * 70ms) both; }
+
+/* 陪伴：几段陪伴加在一起是多少年，八条金线按天数排长短 */
+.lines { display: grid; gap: 10px; width: 100%; margin-top: 24px; }
+.lines__r { display: grid; grid-template-columns: 96px 1fr 56px; align-items: center; gap: 10px; height: 24px; font-size: 14px; color: var(--cream-2); text-align: left; }
+.lines__b { position: relative; height: 6px; border-radius: 3px; background: rgba(230, 198, 132, .12); overflow: hidden; }
+.lines__b::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: var(--w); border-radius: 3px; background: var(--gold); opacity: .84;
+  transform: scaleX(0); transform-origin: 0 50%; transition: transform .9s var(--ease-sheet); transition-delay: calc(var(--i) * 60ms); }
+.lines__r.is-on .lines__b::after { opacity: 1; }
+.in .lines__b::after { transform: none; }
+.lines__d { font-family: var(--font-num); font-weight: 600; color: var(--cream); text-align: right; }
+
+/* 总额：一张长小票从上往下打印出来。墨夜里唯一的一张亮纸 */
+.rv-ticket { position: relative; width: 100%; max-width: 318px; margin-top: 32px; padding: 16px 16px 24px; background: #F4EBD9; color: #3B3228;
+  transform: rotate(-.6deg); box-shadow: 0 26px 44px -16px rgba(0, 0, 0, .7); }
+.rv-ticket__h { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 10px; margin-bottom: 8px; font-size: 15px;
+  border-bottom: 1px dashed rgba(59, 50, 40, .32); }
+.rv-ticket__h span { font-size: 12px; color: #86765F; }
+.rv-ticket__r { display: flex; justify-content: space-between; font-size: 14px; line-height: 2.05; font-variant-numeric: tabular-nums; opacity: 0; }
+.in .rv-ticket__r { animation: print .28s ease-out calc(var(--i) * 55ms) forwards; }
+.rv-ticket__t { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; padding-top: 10px; font-size: 16px;
+  border-top: 1.5px solid rgba(59, 50, 40, .62); }
+.rv-ticket__t .cnt { color: #3B3228; font-size: 24px; }
+.rv-ticket__f { margin-top: 6px; font-size: 12px; color: #86765F; }
+
+/* 去向：100 个墨点，每个点是一块钱里的百分之一 */
+.dots100 { display: grid; grid-template-columns: repeat(10, 1fr); gap: 9px; width: 100%; margin: 4px 0 20px; }
+.dot { width: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--c); opacity: 0; transform: scale(.3); pointer-events: none; }
+.in .dot { animation: dotIn .44s var(--ease-spring) calc(var(--i) * 9ms) forwards; }
+.dots-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; width: 100%; }
+.dl { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 9px; min-height: 40px; font-size: 14px; color: var(--cream-2); text-align: left; }
+.dl img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.dl b { font-weight: 600; color: var(--cream); font-family: var(--font-num); }
+
+/* 墨迹：三年 × 十二个月，格子高矮是那个月花掉的钱。只有说到的那根是亮的 */
+.ink12 { display: grid; gap: 10px; width: 100%; margin-top: 10px; }
+.ink12__row { display: grid; grid-template-columns: 44px 1fr; align-items: end; gap: 8px; }
+.ink12__y { padding-bottom: 2px; font-family: var(--font-num); font-weight: 600; font-size: 12px; color: var(--cream-3); }
+.ink12__cells { display: grid; grid-template-columns: repeat(12, 1fr); align-items: end; gap: 5px; height: 58px; }
+.ink12 i { display: block; height: calc(var(--h) * 100%); min-height: 3px; border-radius: 2px 2px 0 0; background: var(--gold); opacity: .3;
+  transform: scaleY(0); transform-origin: 50% 100%; transition: transform .7s var(--ease-sheet); transition-delay: calc(var(--i) * 28ms); }
+.ink12 i.is-peak { opacity: 1; }
+.in .ink12 i { transform: none; }
+.ink12--one { gap: 8px; }
+.ink12__tall { height: 156px; }
+.ink12__x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; font-family: var(--font-num); font-weight: 600; font-size: 11px; line-height: 1.2; color: var(--cream-3); text-align: center; }
+
+/* 第一次们：金线一路画下去 */
+.tl { position: relative; width: 100%; margin-top: 6px; }
+.tl::before, .tl::after { content: ""; position: absolute; left: 27px; top: 16px; bottom: 16px; width: 1.5px; }
+.tl::before { background: var(--nline); }
+.tl::after { background: var(--gold); transform: scaleY(0); transform-origin: 50% 0; transition: transform 1.5s var(--ease-io) .1s; }
+.in .tl::after { transform: none; }
+.tl__i { position: relative; display: grid; grid-template-columns: 56px 56px 1fr; align-items: center; gap: 12px; min-height: 86px;
+  opacity: 0; transform: translate3d(0, 14px, 0); }
+.in .tl__i { animation: rise .5s var(--ease-out) calc(var(--i) * 70ms + .2s) forwards; }
+.tl__d { font-family: var(--font-num); font-weight: 600; font-size: 12px; color: var(--cream-3); }
+.tl .mini-pol { position: relative; width: 52px; padding: 3px 3px 10px; opacity: 1; filter: brightness(.88); }
+.tl__t { font-size: 15px; line-height: 1.5; color: var(--cream-2); }
+.tl__t b { display: block; font-weight: 400; font-size: 17px; color: var(--cream); }
+
+/* 单档案：满屏照片压暗，名字落在下面 */
+.rv-a { position: relative; display: flex; align-items: flex-end; min-height: 80vh; margin: -56px -28px 0; padding: 60px 28px 36px; overflow: hidden;
+  opacity: 0; transition: opacity .6s ease-out; }
+.rv-a.in { opacity: 1; }
+.rv-a__bg { position: absolute; top: -6%; left: -6%; width: 112%; height: 112%; object-fit: cover; filter: brightness(.44) saturate(.86); transform: scale(1.04); }
+.rv-a::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--night) 0%, rgba(26, 21, 17, .6) 48%, rgba(26, 21, 17, .2) 100%); }
+.rv-a__fg { position: relative; z-index: 1; }
+.rv-a .rv-eyebrow { margin-bottom: 8px; }
+.rv-a__n { margin-bottom: 12px; font-size: 40px; font-weight: 400; line-height: 1.25; color: #FBF3E4; }
+.rv-a .cnt { text-shadow: 0 2px 18px rgba(0, 0, 0, .5); }
+
+/* 第一次，和最近一次：左右两张拍立得，一条金弧把它们连起来 */
+.two-pol { position: relative; display: flex; justify-content: space-between; width: 100%; padding: 4px 2px 0; }
+.two-pol .mini-pol { position: relative; width: 138px; padding: 5px 5px 8px; opacity: 0; filter: none; }
+.two-pol .mini-pol figcaption { min-height: 42px; }
+.in .two-pol .mini-pol { animation: polIn .6s var(--ease-sheet) calc(var(--i) * 130ms) forwards; }
+.two-pol__arc { position: absolute; left: 50%; top: 40px; width: 48px; height: 48px; margin-left: -24px; }
+.two-pol__arc svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
+.two-pol__arc path { stroke-dasharray: 1; stroke-dashoffset: 1; vector-effect: non-scaling-stroke; }
+.in .two-pol__arc path { animation: draw .5s var(--ease-out) .45s forwards; }
+
+/* 最特别的一条：整页墨夜里唯一一张亮着的便签（纸面固定用日间的纸色，不跟随夜间变量） */
+.note--lit { width: 100%; margin-top: 4px; cursor: default; }
+.note--lit .card__sh { background: #000; opacity: .62; transform: translate3d(0, 18px, 0); filter: blur(20px); }
+.note--lit .card__paper { background-color: #FFFCF4; color: #3B3228; }
+.note--lit .note__amt { display: block; margin-top: 8px; font-size: 24px; }
+.note--lit .note__amt.is-zero { font-size: 16px; }
+
+/* 最常做的：用"正"字数 */
+.tally { display: grid; gap: 12px; width: 100%; }
+.tally__r { display: grid; grid-template-columns: 96px 1fr 36px; align-items: baseline; gap: 10px; opacity: 0; }
+.in .tally__r { animation: rise .4s var(--ease-out) calc(var(--i) * 90ms) forwards; }
+.tally__n { font-size: 14px; color: var(--cream-2); }
+.tally__z { font-size: 30px; line-height: 1.15; color: var(--gold); letter-spacing: 4px; word-break: break-all; }
+.tally__z i { font-style: normal; opacity: .62; }
+.tally__c { font-family: var(--font-num); font-weight: 600; color: var(--cream); text-align: right; }
+
+/* 收束：关键词、一句话、一张可以存下来的卡片 */
+.rv-end { min-height: 80vh; align-items: center; text-align: center; }
+.rv-key { font-size: 44px; line-height: 1.3; color: var(--gold); letter-spacing: 8px; }
+.rv-key span { display: inline-block; opacity: 0; transform: translate3d(0, 10px, 0); }
+.in .rv-key span { animation: charIn .36s var(--ease-out) calc(var(--i) * 45ms + .2s) forwards; }
+.rv-quote { margin-top: 16px; font-size: 20px; line-height: 1.9; color: var(--cream-2); }
+.rv-post { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; margin-top: 32px; padding: 0 20px; border-radius: 12px;
+  border: 1px solid var(--nline); background: rgba(230, 198, 132, .06); color: var(--gold); font-size: 15px; }
+.rv-post .ic { width: 18px; height: 18px; }
+.rv-post[disabled] { opacity: .5; }

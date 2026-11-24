@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-vt="none">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Paymory · 账忘录</title>
+  <meta name="description" content="记的不是账，是日子。把每一笔花销连同它的故事写进一本手帐。">
+  <meta name="theme-color" content="#1A1511">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='4' y='4' width='40' height='40' rx='10' fill='%23F7F0E1'/%3E%3Crect x='13' y='10' width='22' height='28' rx='2' fill='%23FFFCF4' stroke='%23B5432F' stroke-width='2'/%3E%3Cpath d='M18 19h12M18 25h12M18 31h7' stroke='%23B5432F' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/parts.css">
+  <link rel="stylesheet" href="css/journal.css">
+  <link rel="stylesheet" href="css/night.css">
+  <link rel="stylesheet" href="css/motion.css">
+</head>
+<body>
+  <div class="stage">
+    <aside class="brand">
+      <div class="brand__logo"><b>Paymory</b><span>账忘录</span></div>
+      <p class="brand__tl">记的不是账，是日子。<br>每一笔，都不白花。</p>
+      <ul class="brand__tips">
+        <li>点一张便签，看它展开</li>
+        <li>按住再松手，摸摸纸的手感</li>
+        <li>标签栏正中是"贴一张"</li>
+      </ul>
+    </aside>
+
+    <div class="phone">
+      <div class="screen" id="screen" data-paper="dot" data-mood="day">
+        <div class="stack">
+          <main id="app" class="app"></main>
+          <nav id="tabbar" class="tabbar" aria-label="主导航"></nav>
+        </div>
+
+        <div id="scrim" class="scrim"></div>
+        <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-label="贴一张便签" hidden></section>
+
+        <div id="veil" class="veil" hidden></div>
+        <article id="mcard" class="mcard" hidden></article>
+
+        <div id="pveil" class="pveil" hidden>
+          <figure class="poster"><img id="posterImg" alt="回望卡片"></figure>
+          <div class="poster__bar">
+            <a id="posterDl" class="btn-primary" download="paymory.png">保存图片</a>
+            <button id="posterX" class="btn-ghost">收起</button>
+          </div>
+        </div>
+
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+        <div class="statusbar">
+          <span id="clock">9:41</span>
+          <span class="statusbar__r" aria-hidden="true">
+            <svg viewBox="0 0 19 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg viewBox="0 0 18 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 4.5a11 11 0 0 1 15 0M4.3 7.5a7 7 0 0 1 9.4 0M7.1 10.3a3 3 0 0 1 3.8 0"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg viewBox="0 0 27 13" fill="none"><rect x=".8" y=".8" width="22" height="11.4" rx="3.2" stroke="currentColor" stroke-opacity=".45" stroke-width="1.2"/><rect x="2.6" y="2.6" width="17" height="7.8" rx="1.8" fill="currentColor"/><path d="M24.6 4.4v4.2c1.2-.3 1.8-1.1 1.8-2.1s-.6-1.8-1.8-2.1z" fill="currentColor" fill-opacity=".45"/></svg>
+          </span>
+        </div>
+        <div class="island" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <noscript><p style="color:#EFE4CE;text-align:center;padding:24px">这本本子需要开启 JavaScript 才能翻。</p></noscript>
+
+  <script src="js/data.js"></script>
+  <script src="js/stickers.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/motion.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

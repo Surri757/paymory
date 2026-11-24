@@ -9,3 +9,7 @@ Thumbs.db
 
 # playwright 会话产物
 prototype/.playwright-cli/
+
+# 审计截图与下载缓存
+tools/out/
+.cache/
